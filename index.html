@@ -5,30 +5,42 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Seçim Simülasyonu</title>
 <style>
+/* Body ve Container */
 body {
     font-family: Arial, sans-serif;
-    background: linear-gradient(to right, #f0f2f5, #d9e2ec);
-    display:flex;
-    justify-content:center;
-    align-items:flex-start;
-    min-height:100vh;
     margin:0;
-    padding:20px;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    background: linear-gradient(to right, #a1c4fd, #c2e9fb);
 }
 .container {
+    max-width:600px;
+    margin:20px auto;
     background:white;
-    padding:30px;
-    border-radius:12px;
-    box-shadow:0 5px 20px rgba(0,0,0,0.2);
-    width:100%;
-    max-width:500px;
+    border-radius:15px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.2);
+    padding:25px;
 }
-h2 { text-align:center; margin-bottom:20px; }
+
+/* Başlık */
+h2 { text-align:center; margin-bottom:15px; }
+.sehir-box {
+    text-align:center;
+    font-weight:bold;
+    font-size:18px;
+    margin-bottom:15px;
+    padding:10px;
+    background: linear-gradient(to right, #ffecd2, #fcb69f);
+    border-radius:12px;
+}
+
+/* Inputlar ve Buton */
 input[type=text], input[type=number] {
-    width:90%;
+    width:85%;
     padding:8px;
     margin:6px 0;
-    border-radius:6px;
+    border-radius:8px;
     border:1px solid #ccc;
     font-size:16px;
 }
@@ -37,143 +49,169 @@ button {
     color:white;
     border:none;
     padding:10px 20px;
-    border-radius:8px;
+    border-radius:10px;
     cursor:pointer;
-    margin:10px 5px;
+    margin:5px 5px;
     font-size:16px;
     transition:0.3s;
 }
 button:hover { background:#0056b3; }
-#adaylarDiv { margin-top:20px; }
-.oyBar {
-    height:25px;
-    border-radius:12px;
-    margin:6px 0;
-    text-align:right;
+
+/* Bar Grafikleri */
+.barContainer {
+    margin:10px 0;
+    position:relative;
+}
+.bar {
+    height:30px;
+    border-radius:15px;
+    background:#ccc;
+    width:0%;
+    transition: width 1s, transform 0.3s;
     color:white;
     font-weight:bold;
-    padding-right:6px;
-    line-height:25px;
-    transition: width 1s ease-in-out;
+    line-height:30px;
+    padding-right:10px;
+    text-align:right;
 }
-#sonuc {
+.bar:hover { transform: scale(1.05); opacity:0.9; }
+
+/* Tablo */
+table {
+    width:100%;
+    border-collapse:collapse;
     margin-top:15px;
-    font-weight:bold;
-    font-size:18px;
-    text-align:center;
 }
+th, td { padding:8px; text-align:center; border:1px solid #ccc; }
+th { background:#007bff; color:white; }
+
+/* Sonuç */
+#sonuc { margin-top:15px; font-weight:bold; text-align:center; font-size:18px; }
+
+/* Footer */
 footer {
-    text-align: center;
-    font-size: 14px;
-    color: #555;
-    margin-top: auto;       /* boşluğu container’ın altına iter */
-    padding: 15px 0;
-    background: #e1e5ea;
-    border-top: 1px solid #ccc;
-    width: 100%;
+    margin-top:auto;
+    text-align:center;
+    font-size:14px;
+    color:#555;
+    padding:15px 0;
+    background:#e1e5ea;
+    border-top:1px solid #ccc;
+    width:100%;
+}
+@media(max-width:600px){
+    .bar { font-size:14px; height:25px; line-height:25px; }
 }
 </style>
 </head>
 <body>
 <div class="container">
     <h2>Dinamik Seçim Simülasyonu</h2>
-
-    <label>Şehir / Ülke Adı:</label><br>
-    <input type="text" id="sehir" placeholder="Örn: Ankara"><br>
-
-    <label>Aday Sayısı:</label><br>
-    <input type="number" id="adaySayisi" placeholder="Örn: 3" min="2"><br>
-
+    <input type="text" id="sehir" placeholder="Şehir / Ülke"><br>
+    <input type="number" id="adaySayisi" placeholder="Aday Sayısı" min="2"><br>
     <button onclick="adaylariOlustur()">Adayları Oluştur</button>
     <button onclick="sifirla()">Sıfırla</button>
-
     <div id="adaylarDiv"></div>
-
     <div id="sonuc"></div>
 </div>
-
-<footer>© 2025 Seçim Simülasyonu Eren ERKAYA | Tüm Hakları Saklıdır</footer>
+<footer>© 2025 Seçim Simülasyonu | Tüm Hakları Saklıdır</footer>
 
 <script>
 let adayInputs = [];
 
-function adaylariOlustur() {
+function adaylariOlustur(){
     let adaySayisi = Number(document.getElementById("adaySayisi").value);
     let adaylarDiv = document.getElementById("adaylarDiv");
-    adaylarDiv.innerHTML = "";
-    adayInputs = [];
+    adaylarDiv.innerHTML="";
+    adayInputs=[];
 
-    if(adaySayisi < 2) { alert("En az 2 aday olmalı."); return; }
+    if(adaySayisi<2){ alert("En az 2 aday olmalı."); return; }
 
     for(let i=0;i<adaySayisi;i++){
         let isimInput = document.createElement("input");
-        isimInput.type = "text";
-        isimInput.placeholder = "Aday " + (i+1) + " İsmi";
-        isimInput.id = "isim"+i;
+        isimInput.type="text";
+        isimInput.placeholder="Aday "+(i+1)+" İsmi";
+        isimInput.id="isim"+i;
         adaylarDiv.appendChild(isimInput);
 
         let oyInput = document.createElement("input");
-        oyInput.type = "number";
-        oyInput.placeholder = "Aday " + (i+1) + " Oy";
-        oyInput.id = "oy"+i;
+        oyInput.type="number";
+        oyInput.placeholder="Aday "+(i+1)+" Oy";
+        oyInput.id="oy"+i;
         adaylarDiv.appendChild(oyInput);
 
         adayInputs.push({isimId:"isim"+i, oyId:"oy"+i});
 
+        let barContainer = document.createElement("div");
+        barContainer.className="barContainer";
         let bar = document.createElement("div");
-        bar.className = "oyBar";
-        bar.id = "bar"+i;
-        bar.style.width="0%";
-        bar.style.backgroundColor = `hsl(${i*60 % 360},70%,50%)`;
-        adaylarDiv.appendChild(bar);
-
-        adaylarDiv.appendChild(document.createElement("br"));
+        bar.className="bar";
+        bar.id="bar"+i;
+        barContainer.appendChild(bar);
+        adaylarDiv.appendChild(barContainer);
     }
 
     let hesaplaBtn = document.createElement("button");
-    hesaplaBtn.innerText = "Hesapla";
+    hesaplaBtn.innerText="Hesapla";
     hesaplaBtn.onclick = hesapla;
     adaylarDiv.appendChild(hesaplaBtn);
 }
 
-function hesapla() {
-    let toplam = 0;
-    let oylar = [];
+function hesapla(){
+    let toplam=0;
+    let oylar=[];
 
     for(let a of adayInputs){
         let oy = Number(document.getElementById(a.oyId).value);
-        if(oy < 0) oy = 0;
+        if(oy<0) oy=0;
         oylar.push(oy);
-        toplam += oy;
+        toplam+=oy;
     }
 
-    if(toplam === 0){ document.getElementById("sonuc").innerText="Lütfen oyları girin!"; return; }
+    if(toplam===0){ document.getElementById("sonuc").innerText="Lütfen oyları girin!"; return; }
 
-    let sonucMetin = "Seçim Şehri: " + document.getElementById("sehir").value + "\n\n";
+    let sehir = document.getElementById("sehir").value || "Belirtilmemiş Şehir";
+    document.getElementById("sonuc").innerHTML = `<div class="sehir-box">Seçim Şehri: ${sehir}</div>`;
 
-    let maxOy = Math.max(...oylar);
-    let kazananlar = [];
+    let maxOy=Math.max(...oylar);
+    let kazananlar=[];
 
+    // Barları ve tabloları güncelle
+    let table = `<table><tr><th>Aday</th><th>Oy</th><th>Yüzde</th></tr>`;
     for(let i=0;i<adayInputs.length;i++){
-        let isim = document.getElementById(adayInputs[i].isimId).value || "Aday "+(i+1);
-        let yuzde = ((oylar[i]/toplam)*100).toFixed(2);
-        sonucMetin += isim + ": %" + yuzde + "\n";
+        let isim=document.getElementById(adayInputs[i].isimId).value || "Aday "+(i+1);
+        let yuzde=((oylar[i]/toplam)*100).toFixed(2);
+        document.getElementById("bar"+i).style.width=yuzde+"%";
+        document.getElementById("bar"+i).innerText=yuzde+"%";
 
-        document.getElementById("bar"+i).style.width = yuzde + "%";
-        document.getElementById("bar"+i).innerText = "%" + yuzde;
+        if(oylar[i]===maxOy) kazananlar.push(i);
 
-        if(oylar[i] === maxOy) kazananlar.push(isim);
+        table += `<tr>
+            <td>${isim}</td>
+            <td>${oylar[i]}</td>
+            <td>${yuzde}%</td>
+        </tr>`;
+    }
+    table += "</table>";
+    document.getElementById("sonuc").innerHTML += table;
+
+    // Kazanan barı yeşil yap, diğerleri gri
+    for(let i=0;i<adayInputs.length;i++){
+        document.getElementById("bar"+i).style.backgroundColor = kazananlar.includes(i) ? "#28a745" : "#6c757d";
     }
 
-    sonucMetin += "\nKazanan: " + kazananlar.join(", ");
-    document.getElementById("sonuc").innerText = sonucMetin;
+    // Kazanan isimleri göster
+    let kazananIsimleri = kazananlar.map(i=>document.getElementById(adayInputs[i].isimId).value || "Aday "+(i+1));
+    document.getElementById("sonuc").innerHTML += `<div style="margin-top:10px; font-weight:bold; font-size:18px; text-align:center;">
+        Kazanan: ${kazananIsimleri.join(", ")}
+    </div>`;
 }
 
 function sifirla(){
-    document.getElementById("sehir").value = "";
-    document.getElementById("adaySayisi").value = "";
-    document.getElementById("adaylarDiv").innerHTML = "";
-    document.getElementById("sonuc").innerText = "";
+    document.getElementById("sehir").value="";
+    document.getElementById("adaySayisi").value="";
+    document.getElementById("adaylarDiv").innerHTML="";
+    document.getElementById("sonuc").innerHTML="";
 }
 </script>
 </body>
